@@ -51,6 +51,10 @@ class BackgroundWorker(
 
     private val zoneId
         get() = workerParams.inputData.getString(ZONE_ID)!!
+    private val latitude
+        get() = workerParams.inputData.getString(latitude)
+        private val longitude
+        get() = workerParams.inputData.getString(longitude)
 
     private val isInDebug
         get() = workerParams.inputData.getBoolean(IS_IN_DEBUG_MODE_KEY, false)
