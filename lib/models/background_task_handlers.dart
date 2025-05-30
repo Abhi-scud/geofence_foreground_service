@@ -8,5 +8,6 @@ import 'package:latlng/latlng.dart';
 typedef BackgroundTriggerHandler = Future<bool> Function(
   String zoneId,
   GeofenceEventType triggerType,
-   List<LatLng> coordinates,
+  String latitude,
+  String longitude,
 );

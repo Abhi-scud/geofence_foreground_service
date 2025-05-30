@@ -180,6 +180,9 @@ class GeofenceForegroundService : Service() {
                 val triggeringGeoFences = geofencingEvent.triggeringGeofences
 
                 val zoneID: String? = triggeringGeoFences?.first()?.requestId
+                val latitude :String? = triggeringGeoFences?.first()?.latitude.toString()
+                val longitude :String? = triggeringGeoFences?.first()?.longitude.toString()
+            
                 Log.e("geoFencePkg", triggeringGeoFences?.first()?.toString() ?: "No geofence triggered") 
 
                 if (zoneID != null) {
@@ -188,7 +191,9 @@ class GeofenceForegroundService : Service() {
                             .setInputData(buildTaskInputData(
                                 zoneID,
                                 isInDebugMode,
-                                geofenceTransition.toString()
+                                geofenceTransition.toString(),
+                                latitude,
+                                longitude
                             ))
                             .build()
 
@@ -251,14 +256,18 @@ class GeofenceForegroundService : Service() {
     private fun buildTaskInputData(
         zoneID: String,
         isInDebugMode: Boolean,
-        payload: String?
+        payload: String?,
+        latitude: String?, longitude: String?
     ): Data {
         return Data.Builder()
             .putString(ZONE_ID, zoneID)
             .putBoolean(IS_IN_DEBUG_MODE_KEY, isInDebugMode)
+            .putString(LATITUDE, latitude)
+            .putString(LONGITUDE, longitude)
             .apply {
                 payload?.let {
                     putString(PAYLOAD_KEY, payload)
+                    
                 }
             }
             .build()

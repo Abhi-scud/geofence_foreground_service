@@ -150,7 +150,7 @@ class BackgroundWorker(
             BACKGROUND_CHANNEL_INITIALIZED -> {
                 backgroundChannel.invokeMethod(
                     "onResultSend",
-                    mapOf(ZONE_ID to zoneId, PAYLOAD_KEY to payload),
+                    mapOf(ZONE_ID to zoneId, PAYLOAD_KEY to payload,LATITUDE to latitude, LONGITUDE to longitude),
                     object : MethodChannel.Result {
                         override fun notImplemented() {
                             stopEngine(Result.failure())

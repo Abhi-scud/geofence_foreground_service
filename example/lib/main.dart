@@ -13,7 +13,7 @@ import 'package:permission_handler/permission_handler.dart';
 @pragma('vm:entry-point')
 void callbackDispatcher() async {
   GeofenceForegroundService().handleTrigger(
-    backgroundTriggerHandler: (zoneID, triggerType) {
+    backgroundTriggerHandler: (zoneID, triggerType,lat,long) {
       log(zoneID, name: 'zoneID');
 
       if (triggerType == GeofenceEventType.enter) {

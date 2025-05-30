@@ -94,7 +94,8 @@ class MethodChannelGeofenceForegroundService
       return backgroundTriggerHandler(
         call.arguments['ps.byshy.geofence.ZONE_ID'],
         GeofenceEventType.findById(jsonDecode(inputData) as int?),
-        call.arguments[''],
+        call.arguments['ps.byshy.geofence.LATITUDE'],
+        call.arguments['ps.byshy.geofence.LONGITUDE'],
 
       );
     });
