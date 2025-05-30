@@ -36,6 +36,8 @@ class BackgroundWorker(
         const val PAYLOAD_KEY = "ps.byshy.geofence.INPUT_DATA"
         const val ZONE_ID = "ps.byshy.geofence.ZONE_ID"
         const val IS_IN_DEBUG_MODE_KEY = "ps.byshy.geofence.IS_IN_DEBUG_MODE_KEY"
+        const val LATITUDE = "ps.byshy.geofence.LATITUDE"
+        const val LONGITUDE = "ps.byshy.geofence.LONGITUDE"
 
         const val BACKGROUND_CHANNEL_NAME =
             "ps.byshy.geofence/background_geofence_foreground_service"

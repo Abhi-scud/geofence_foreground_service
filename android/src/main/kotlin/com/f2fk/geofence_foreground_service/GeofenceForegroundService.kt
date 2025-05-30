@@ -19,6 +19,8 @@ import androidx.work.WorkManager
 import com.f2fk.geofence_foreground_service.BackgroundWorker.Companion.IS_IN_DEBUG_MODE_KEY
 import com.f2fk.geofence_foreground_service.BackgroundWorker.Companion.PAYLOAD_KEY
 import com.f2fk.geofence_foreground_service.BackgroundWorker.Companion.ZONE_ID
+import com.f2fk.geofence_foreground_service.BackgroundWorker.Companion.LATITUDE
+import com.f2fk.geofence_foreground_service.BackgroundWorker.Companion.LONGITUDE
 import com.f2fk.geofence_foreground_service.enums.GeofenceServiceAction
 import com.f2fk.geofence_foreground_service.utils.extraNameGen
 import com.f2fk.geofence_foreground_service.utils.SharedPreferenceHelper
@@ -178,6 +180,8 @@ class GeofenceForegroundService : Service() {
                 val triggeringGeoFences = geofencingEvent.triggeringGeofences
 
                 val zoneID: String? = triggeringGeoFences?.first()?.requestId
+                Log.e(TAG, triggeringGeoFences?.first()?.toString)
+                
 
                 if (zoneID != null) {
                     val oneOffTaskRequest =
