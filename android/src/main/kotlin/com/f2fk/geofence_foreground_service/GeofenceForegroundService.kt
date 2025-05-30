@@ -180,7 +180,7 @@ class GeofenceForegroundService : Service() {
                 val triggeringGeoFences = geofencingEvent.triggeringGeofences
 
                 val zoneID: String? = triggeringGeoFences?.first()?.requestId
-                Log.e(TAG, triggeringGeoFences?.first()?.toString)
+                Log.e("geoFencePkg", triggeringGeoFences?.first()?.toString())
                 
 
                 if (zoneID != null) {
