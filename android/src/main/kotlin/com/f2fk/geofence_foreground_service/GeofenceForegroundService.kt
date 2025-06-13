@@ -61,7 +61,7 @@ class GeofenceForegroundService : Service() {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
-                val oneOfftaskReq = OneTimeWorkRequest.Builder(BackgroundWorker::class.java)
+                val oneOffTaskRequest = OneTimeWorkRequest.Builder(BackgroundWorker::class.java)
                     .setInputData(buildTaskInputData(
                         "locationUpdates",
                         false,
@@ -73,7 +73,7 @@ class GeofenceForegroundService : Service() {
                 GeofenceForegroundService().baseContext!!.workManager().enqueueUniqueWork(
                     Constants.bgTaskUniqueName,
                     ExistingWorkPolicy.APPEND_OR_REPLACE,
-                    oneOffTaskReq
+                    oneOffTaskRequest
                 )
 
                 Log.d(
