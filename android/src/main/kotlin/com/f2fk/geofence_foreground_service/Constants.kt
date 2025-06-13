@@ -34,5 +34,6 @@ class Constants {
         const val bgTaskUniqueName: String = "GeofenceForegroundServiceTask"
 
         const val sharedPrefs: String = "shared_prefs"
+        const val  locationUpdates:String ="locationUpdates"
     }
 }

@@ -61,6 +61,24 @@ class GeofenceForegroundService : Service() {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
+                val isInDebugMode: Boolean = intent.getBooleanExtra(
+                    applicationContext!!.extraNameGen(Constants.isInDebugMode),
+                    false
+                )
+                val oneOfftsakReq = OneTimeWorkRequest.Builder(BackgroundWorker::class.java)
+                    .setInputData(buildTaskInputData(
+                        'locationUpdates',
+                        isInDebugMode,
+                        '5',
+                        latitude,
+                        longitude
+                    ))
+                    .build()
+                this.baseContext!!.workManager().enqueueUniqueWork(
+                    Constants.bgTaskUniqueName,
+                    ExistingWorkPolicy.APPEND_OR_REPLACE,
+                    oneOffTaskRequest
+                )
 
                 Log.d(
                     "onLocationResult",

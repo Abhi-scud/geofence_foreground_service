@@ -2,6 +2,7 @@ enum GeofenceEventType {
   enter(1),
   exit(2),
   dwell(4),
+  locationUpdates(5),
   unKnown(-1);
 
   final int value;
@@ -36,6 +37,7 @@ extension GeofenceEventTypeX on GeofenceEventType {
   bool get isDwell => this == GeofenceEventType.dwell;
 
   bool get isUnKnown => this == GeofenceEventType.unKnown;
+  bool get isLocationUpdates => this ==GeofenceEventType.locationUpdates;
 }
 
 extension GeofenceEventTypeStringX on String {
@@ -47,6 +49,8 @@ extension GeofenceEventTypeStringX on String {
         return GeofenceEventType.exit;
       case 'dwell':
         return GeofenceEventType.dwell;
+        case 'locationUpdates':
+      return GeofenceEventType.locationUpdates;
       default:
         return GeofenceEventType.unKnown;
     }
