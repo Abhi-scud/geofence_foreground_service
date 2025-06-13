@@ -61,25 +61,31 @@ class GeofenceForegroundService : Service() {
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
-                val oneOffTaskRequest = OneTimeWorkRequest.Builder(BackgroundWorker::class.java)
-                    .setInputData(buildTaskInputData(
-                        "locationUpdates",
-                        false,
-                        "5",
-                        locationResult.lastLocation?.latitude.toString(),
-                        locationResult.lastLocation?.longitude.toString()
-                    ))
-                    .build()
-                GeofenceForegroundService().baseContext!!.workManager().enqueueUniqueWork(
-                    Constants.bgTaskUniqueName,
-                    ExistingWorkPolicy.APPEND_OR_REPLACE,
-                    oneOffTaskRequest
-                )
 
-                Log.d(
-                    "onLocationResult",
-                    "${locationResult.lastLocation?.latitude}, ${locationResult.lastLocation?.longitude}"
-                )
+                val location = locationResult.lastLocation
+                if (location != null) {
+                    val oneOffTaskRequest = OneTimeWorkRequest.Builder(BackgroundWorker::class.java)
+                        .setInputData(buildTaskInputData(
+                            "locationUpdates",
+                            false,
+                            "5",
+                            location.latitude.toString(),
+                            location.longitude.toString()
+                        ))
+                        .build()
+
+                    this@GeofenceForegroundService.applicationContext
+                        .workManager()
+                        .enqueueUniqueWork(
+                            Constants.bgTaskUniqueName,
+                            ExistingWorkPolicy.APPEND_OR_REPLACE,
+                            oneOffTaskRequest
+                        )
+
+                    Log.d("onLocationResult", "${location.latitude}, ${location.longitude}")
+                } else {
+                    Log.w("onLocationResult", "Location is null")
+                }
             }
         }
     }
