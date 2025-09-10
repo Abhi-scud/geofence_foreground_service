@@ -52,7 +52,7 @@ class GeofenceForegroundService : Service() {
             Priority.PRIORITY_HIGH_ACCURACY,
             TimeUnit.SECONDS.toMillis(20)
         ).apply {
-            setMinUpdateDistanceMeters(5f)
+            setMinUpdateDistanceMeters(3f)
             setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
             setWaitForAccurateLocation(true)
         }
@@ -167,26 +167,44 @@ class GeofenceForegroundService : Service() {
                 val triggeringLocation = geofencingEvent.triggeringLocation
                 val latitude :String? = triggeringLocation?.latitude?.toString()
                 val longitude :String? = triggeringLocation?.longitude?.toString()
+
             
                 Log.e("geoFencePkg", triggeringGeoFences?.first()?.toString() ?: "No geofence triggered") 
 
                 if (zoneID != null) {
-                    val oneOffTaskRequest =
-                        OneTimeWorkRequest.Builder(BackgroundWorker::class.java)
-                            .setInputData(buildTaskInputData(
+                    enqueueWork(zoneID, isInDebugMode, geofenceTransition, latitude, longitude)
+                    Log.d("locfromtriglocation", "lat ${latitude} lng ${longitude}")
+                    fusedLocationClient.getCurrentLocation(
+                        Priority.PRIORITY_HIGH_ACCURACY,
+                        null
+                    ).addOnSuccessListener { location ->
+                        if (location != null) {
+                            Log.d("liveLocation", "lat ${location.latitude} lng ${location.longitude}")
+                            enqueueWork(
                                 zoneID,
                                 isInDebugMode,
-                                geofenceTransition.toString(),
-                                latitude,
-                                longitude
-                            ))
-                            .build()
-
-                    this.baseContext!!.workManager().enqueueUniqueWork(
-                        Constants.bgTaskUniqueName,
-                        ExistingWorkPolicy.APPEND,
-                        oneOffTaskRequest
-                    )
+                                geofenceTransition,
+                                location.latitude.toString(),
+                                location.longitude.toString()
+                            )
+                        }
+                    }
+//                    val oneOffTaskRequest =
+//                        OneTimeWorkRequest.Builder(BackgroundWorker::class.java)
+//                            .setInputData(buildTaskInputData(
+//                                zoneID,
+//                                isInDebugMode,
+//                                geofenceTransition.toString(),
+//                                latitude,
+//                                longitude
+//                            ))
+//                            .build()
+//
+//                    this.baseContext!!.workManager().enqueueUniqueWork(
+//                        Constants.bgTaskUniqueName,
+//                        ExistingWorkPolicy.APPEND,
+//                        oneOffTaskRequest
+//                    )
                 }
             }
         } catch (e: Exception) {
@@ -232,7 +250,7 @@ class GeofenceForegroundService : Service() {
         removeTask.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 Log.d("Unsubscribe", "Location Callback removed.")
-                stopSelf()
+                //stopSelf()
             } else {
                 Log.d("Unsubscribe", "Failed to remove Location Callback.")
             }
