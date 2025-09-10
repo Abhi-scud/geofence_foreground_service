@@ -140,7 +140,10 @@ class GeofenceForegroundService : Service() {
             )
             subscribeToLocationUpdates()
         } else if (geofenceAction == GeofenceServiceAction.TRIGGER) {
+            //please note here
+            subscribeToLocationUpdates()
             handleGeofenceEvent(intent)
+
         }
 
         return START_STICKY
