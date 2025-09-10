@@ -147,6 +147,32 @@ class GeofenceForegroundService : Service() {
 
         return START_STICKY
     }
+    private fun enqueueWork(
+        zoneId: String,
+        isInDebug: Boolean,
+        transition: Int,
+        latitude: String?,
+        longitude: String?
+    ) {
+        val oneOffTaskRequest =
+            OneTimeWorkRequest.Builder(BackgroundWorker::class.java)
+                .setInputData(
+                    buildTaskInputData(
+                        zoneId,
+                        isInDebug,
+                        transition.toString(),
+                        latitude,
+                        longitude
+                    )
+                )
+                .build()
+
+        applicationContext.workManager().enqueueUniqueWork(
+            Constants.bgTaskUniqueName,
+            ExistingWorkPolicy.APPEND,
+            oneOffTaskRequest
+        )
+    }
 
 
     private fun handleGeofenceEvent(intent: Intent) {
@@ -173,7 +199,7 @@ class GeofenceForegroundService : Service() {
                 if (zoneID != null) {
                     enqueueWork(zoneID, isInDebugMode, geofenceTransition, latitude, longitude)
                     Log.d("locfromtriglocation", "lat ${latitude} lng ${longitude}")
-                    fusedLocationClient.getCurrentLocation(
+                    fusedLocationProviderClient.getCurrentLocation(
                         Priority.PRIORITY_HIGH_ACCURACY,
                         null
                     ).addOnSuccessListener { location ->
