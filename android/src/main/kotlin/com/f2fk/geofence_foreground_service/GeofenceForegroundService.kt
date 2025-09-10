@@ -50,6 +50,33 @@ class GeofenceForegroundService : Service() {
     override fun onBind(p0: Intent?): IBinder? {
         return null
     }
+    private fun enqueueWork(
+        zoneId: String,
+        isInDebugMode: Boolean,
+        geofenceTransition: String,
+        latitude: String?,
+        longitude: String?
+    ) {
+        val oneOffTaskRequest =
+            OneTimeWorkRequest.Builder(BackgroundWorker::class.java)
+                .setInputData(
+                    buildTaskInputData(
+                        zoneId,
+                        isInDebugMode,
+                        geofenceTransition,
+                        latitude,
+                        longitude
+                    )
+                )
+                .build()
+
+        applicationContext.workManager().enqueueUniqueWork(
+            Constants.bgTaskUniqueName,
+            ExistingWorkPolicy.APPEND,
+            oneOffTaskRequest
+        )
+    }
+
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent == null) {
@@ -159,7 +186,7 @@ class GeofenceForegroundService : Service() {
 
                 if (zoneID != null) {
 
-                    Log.d("liveLocation", "lat ${location.latitude} lng ${location.longitude}")
+                    Log.d("liveLocation", "lat ${latitude} lng ${longitude}")
                     val oneOffTaskRequest =
                         OneTimeWorkRequest.Builder(BackgroundWorker::class.java)
                             .setInputData(buildTaskInputData(
