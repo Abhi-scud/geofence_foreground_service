@@ -45,6 +45,14 @@ class GeofenceForegroundService : Service() {
     override fun onCreate() {
         super.onCreate()
 
+    }
+
+    override fun onBind(p0: Intent?): IBinder? {
+        return null
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
         fusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(this)
 
@@ -88,13 +96,6 @@ class GeofenceForegroundService : Service() {
                 }
             }
         }
-    }
-
-    override fun onBind(p0: Intent?): IBinder? {
-        return null
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (intent == null) {
             stopSelf()
             return START_NOT_STICKY
@@ -140,8 +141,6 @@ class GeofenceForegroundService : Service() {
             )
             subscribeToLocationUpdates()
         } else if (geofenceAction == GeofenceServiceAction.TRIGGER) {
-            //please note here
-            subscribeToLocationUpdates()
             handleGeofenceEvent(intent)
 
         }
