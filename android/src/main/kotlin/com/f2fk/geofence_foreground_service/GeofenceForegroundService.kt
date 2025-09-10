@@ -52,7 +52,7 @@ class GeofenceForegroundService : Service() {
             Priority.PRIORITY_HIGH_ACCURACY,
             TimeUnit.SECONDS.toMillis(20)
         ).apply {
-            setMinUpdateDistanceMeters(100f)
+            setMinUpdateDistanceMeters(5f)
             setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
             setWaitForAccurateLocation(true)
         }
