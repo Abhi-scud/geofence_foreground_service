@@ -43,6 +43,36 @@ class GeofenceForegroundService : Service() {
     private lateinit var locationCallback: LocationCallback
 
     override fun onCreate() {
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
+
+        locationRequest = LocationRequest.Builder(
+            Priority.PRIORITY_HIGH_ACCURACY,
+            TimeUnit.SECONDS.toMillis(10)
+        ).apply {
+            setMinUpdateDistanceMeters(2f)
+            setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
+            setWaitForAccurateLocation(true)
+        }.build()
+
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                super.onLocationResult(locationResult)
+
+                val location = locationResult.lastLocation
+                if (location != null) {
+                    enqueueWork(
+                        "locationUpdates",
+                        false,
+                        "5",
+                        location.latitude.toString(),
+                        location.longitude.toString()
+                    )
+                    Log.d("onLocationResult", "${location.latitude}, ${location.longitude}")
+                } else {
+                    Log.w("onLocationResult", "Location is null")
+                }
+            }
+        }
         super.onCreate()
 
     }
@@ -83,38 +113,6 @@ class GeofenceForegroundService : Service() {
             stopSelf()
             return START_NOT_STICKY
         }
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
-        locationRequest = LocationRequest.Builder(
-            Priority.PRIORITY_HIGH_ACCURACY,
-            TimeUnit.SECONDS.toMillis(10)
-        ).apply {
-            setMinUpdateDistanceMeters(2f)
-            setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
-            setWaitForAccurateLocation(true)
-        }.build()
-
-        locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                super.onLocationResult(locationResult)
-
-                val location = locationResult.lastLocation
-                if (location != null) {
-                    enqueueWork(
-                        "locationUpdates",
-                        false,
-                        "5",
-                        location.latitude.toString(),
-                        location.longitude.toString()
-                    )
-                    Log.d("onLocationResult", "${location.latitude}, ${location.longitude}")
-                } else {
-                    Log.w("onLocationResult", "Location is null")
-                }
-            }
-        }
-
         val geofenceAction = GeofenceServiceAction.valueOf(
             intent.getStringExtra(applicationContext.extraNameGen(Constants.geofenceAction))!!
         )
