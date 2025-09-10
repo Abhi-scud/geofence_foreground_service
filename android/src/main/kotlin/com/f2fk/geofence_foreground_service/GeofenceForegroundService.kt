@@ -78,7 +78,7 @@ class GeofenceForegroundService : Service() {
                         .workManager()
                         .enqueueUniqueWork(
                             Constants.bgTaskUniqueName,
-                            ExistingWorkPolicy.APPEND_OR_REPLACE,
+                            ExistingWorkPolicy.APPEND,
                             oneOffTaskRequest
                         )
 
@@ -164,8 +164,9 @@ class GeofenceForegroundService : Service() {
                 val triggeringGeoFences = geofencingEvent.triggeringGeofences
 
                 val zoneID: String? = triggeringGeoFences?.first()?.requestId
-                val latitude :String? = triggeringGeoFences?.first()?.latitude.toString()
-                val longitude :String? = triggeringGeoFences?.first()?.longitude.toString()
+                val triggeringLocation = geofencingEvent.triggeringLocation
+                val latitude :String? = triggeringLocation?.latitude?.toString()
+                val longitude :String? = triggeringLocation?.longitude?.toString()
             
                 Log.e("geoFencePkg", triggeringGeoFences?.first()?.toString() ?: "No geofence triggered") 
 
@@ -183,7 +184,7 @@ class GeofenceForegroundService : Service() {
 
                     this.baseContext!!.workManager().enqueueUniqueWork(
                         Constants.bgTaskUniqueName,
-                        ExistingWorkPolicy.APPEND_OR_REPLACE,
+                        ExistingWorkPolicy.APPEND,
                         oneOffTaskRequest
                     )
                 }
