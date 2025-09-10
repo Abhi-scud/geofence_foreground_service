@@ -193,7 +193,7 @@ class GeofenceForegroundService : Service() {
 
     override fun onDestroy() {
         //please look here any eoor comes for location
-       // unsubscribeToLocationUpdates()
+        unsubscribeToLocationUpdates()
 
         super.onDestroy()
     }
