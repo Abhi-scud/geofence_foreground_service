@@ -58,9 +58,9 @@ class GeofenceForegroundService : Service() {
 
         locationRequest = LocationRequest.Builder(
             Priority.PRIORITY_HIGH_ACCURACY,
-            TimeUnit.SECONDS.toMillis(20)
+            TimeUnit.SECONDS.toMillis(10)
         ).apply {
-            setMinUpdateDistanceMeters(3f)
+            setMinUpdateDistanceMeters(2f)
             setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
             setWaitForAccurateLocation(true)
         }
@@ -82,7 +82,7 @@ class GeofenceForegroundService : Service() {
                         ))
                         .build()
 
-                    this@GeofenceForegroundService.applicationContext
+                    applicationContext
                         .workManager()
                         .enqueueUniqueWork(
                             Constants.bgTaskUniqueName,
@@ -147,32 +147,6 @@ class GeofenceForegroundService : Service() {
 
         return START_STICKY
     }
-    private fun enqueueWork(
-        zoneId: String,
-        isInDebug: Boolean,
-        transition: Int,
-        latitude: String?,
-        longitude: String?
-    ) {
-        val oneOffTaskRequest =
-            OneTimeWorkRequest.Builder(BackgroundWorker::class.java)
-                .setInputData(
-                    buildTaskInputData(
-                        zoneId,
-                        isInDebug,
-                        transition.toString(),
-                        latitude,
-                        longitude
-                    )
-                )
-                .build()
-
-        applicationContext.workManager().enqueueUniqueWork(
-            Constants.bgTaskUniqueName,
-            ExistingWorkPolicy.APPEND,
-            oneOffTaskRequest
-        )
-    }
 
 
     private fun handleGeofenceEvent(intent: Intent) {
@@ -197,39 +171,24 @@ class GeofenceForegroundService : Service() {
                 Log.e("geoFencePkg", triggeringGeoFences?.first()?.toString() ?: "No geofence triggered") 
 
                 if (zoneID != null) {
-                    enqueueWork(zoneID, isInDebugMode, geofenceTransition, latitude, longitude)
-                    Log.d("locfromtriglocation", "lat ${latitude} lng ${longitude}")
-                    fusedLocationProviderClient.getCurrentLocation(
-                        Priority.PRIORITY_HIGH_ACCURACY,
-                        null
-                    ).addOnSuccessListener { location ->
-                        if (location != null) {
-                            Log.d("liveLocation", "lat ${location.latitude} lng ${location.longitude}")
-                            enqueueWork(
+
+                    Log.d("liveLocation", "lat ${location.latitude} lng ${location.longitude}")
+                    val oneOffTaskRequest =
+                        OneTimeWorkRequest.Builder(BackgroundWorker::class.java)
+                            .setInputData(buildTaskInputData(
                                 zoneID,
                                 isInDebugMode,
-                                geofenceTransition,
-                                location.latitude.toString(),
-                                location.longitude.toString()
-                            )
-                        }
-                    }
-//                    val oneOffTaskRequest =
-//                        OneTimeWorkRequest.Builder(BackgroundWorker::class.java)
-//                            .setInputData(buildTaskInputData(
-//                                zoneID,
-//                                isInDebugMode,
-//                                geofenceTransition.toString(),
-//                                latitude,
-//                                longitude
-//                            ))
-//                            .build()
-//
-//                    this.baseContext!!.workManager().enqueueUniqueWork(
-//                        Constants.bgTaskUniqueName,
-//                        ExistingWorkPolicy.APPEND,
-//                        oneOffTaskRequest
-//                    )
+                                geofenceTransition.toString(),
+                                latitude,
+                                longitude
+                            ))
+                            .build()
+
+                    this.baseContext!!.workManager().enqueueUniqueWork(
+                        Constants.bgTaskUniqueName,
+                        ExistingWorkPolicy.APPEND,
+                        oneOffTaskRequest
+                    )
                 }
             }
         } catch (e: Exception) {
@@ -239,9 +198,7 @@ class GeofenceForegroundService : Service() {
     }
 
     override fun onDestroy() {
-        //please look here any eoor comes for location
         unsubscribeToLocationUpdates()
-
         super.onDestroy()
     }
 
@@ -263,6 +220,7 @@ class GeofenceForegroundService : Service() {
             // for ActivityCompat#requestPermissions for more details.
             return
         }
+        Log.d("Subscribe", "Adding Location Callback.")
         fusedLocationProviderClient.requestLocationUpdates(
             locationRequest,
             locationCallback,
