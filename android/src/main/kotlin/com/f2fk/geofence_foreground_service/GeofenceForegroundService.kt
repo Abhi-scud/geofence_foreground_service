@@ -46,12 +46,12 @@ class GeofenceForegroundService : Service() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
 
         locationRequest = LocationRequest.Builder(
-            Priority.PRIORITY_HIGH_ACCURACY,
-            TimeUnit.SECONDS.toMillis(10)
+            Priority.PRIORITY_BALANCED_POWER_ACCURACY,
+            TimeUnit.SECONDS.toMillis(20)
         ).apply {
             setMinUpdateDistanceMeters(2f)
             setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
-            setWaitForAccurateLocation(true)
+            setWaitForAccurateLocation(false)
         }.build()
 
         locationCallback = object : LocationCallback() {
